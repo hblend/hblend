@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"hblend/blender"
 	"hblend/configuration"
 	"hblend/utils"
@@ -31,6 +32,11 @@ func main() {
 
 	if config.Init {
 		initialize_directories()
+		return
+	}
+
+	if 1 != len(flag.Args()) {
+		fmt.Println("You should indicate what component, for example:\nhblend my-app")
 		return
 	}
 
