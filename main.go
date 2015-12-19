@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"hblend/blender"
 	"hblend/configuration"
-	"hblend/utils"
 	"os"
 )
 
@@ -55,12 +54,4 @@ func process(component string) {
 	b := blender.NewBlender(&config)
 
 	b.Blend(component)
-
-	utils.WriteFile(config.Dir.Www+"/"+component+".html", b.HTML)
-	utils.WriteFile(config.Dir.Www+"/"+b.CSS_tags[""], b.CSS)
-	utils.WriteFile(config.Dir.Www+"/"+b.JS_tags[""], b.JS)
-
-	for src, dst := range b.Files {
-		utils.CopyFile(src, config.Dir.Www+"/"+dst)
-	}
 }

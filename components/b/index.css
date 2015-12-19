@@ -1,1 +1,12 @@
-/* b */
+
+code {
+  color: silver;
+  background-color:  #333333;
+  margin-bottom: 32px;
+}
+
+code .gutter {
+  color: gray;
+  background-color: #222222;
+  border: none;
+}

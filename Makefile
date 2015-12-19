@@ -6,6 +6,8 @@ GOPKG=$(GOPATH)/pkg
 GO=go
 GOCMD=GOPATH=$(GOPATH) GOBIN=$(GOBIN) $(GO)
 
+.DEFAULT_GOAL := build_one
+
 .PHONY: all build clean dependencies setup
 
 all: build
@@ -19,6 +21,9 @@ setup:
 
 dependencies:
 	$(GOCMD) get $(PROJECT)
+
+build_one: clean setup dependencies
+	$(GOCMD) build -o $(GOBIN)/$(PROJECT);
 
 build: clean setup dependencies
 	for GOOS in "windows" "linux" "darwin"; do \

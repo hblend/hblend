@@ -1,41 +1,11 @@
 package blender
 
 import (
-	"hblend/configuration"
 	"hblend/utils"
-	"io/ioutil"
-	"log"
 	"strings"
 
 	"github.com/GerardoOscarJT/gotreescript"
 )
-
-type Blender struct {
-	JS       string
-	JS_tags  map[string]string
-	CSS      string
-	CSS_tags map[string]string
-	HTML     string
-	Files    map[string]string
-	included map[string]bool
-	config   *configuration.Configuration
-}
-
-func NewBlender(config *configuration.Configuration) *Blender {
-
-	return &Blender{
-		config:   config,
-		included: map[string]bool{},
-		Files:    map[string]string{},
-		JS_tags:  map[string]string{},
-		CSS_tags: map[string]string{},
-	}
-}
-
-func (this *Blender) Blend(component string) {
-
-	this.HTML = this.blend_html(component)
-}
 
 func (this *Blender) blend_html(component string) string {
 
@@ -56,16 +26,20 @@ func (this *Blender) blend_html(component string) string {
 				map_html[token] = this.blend_html(token.Flags[0])
 			} else if "base64" == name {
 				map_html[token] += this.tag_base64(component, token)
-			} else if "file" == name {
-				map_html[token] = this.tag_file(component, token)
+			} else if "path" == name {
+				map_html[token] = this.tag_path(PATH_FILES, component, token)
+			} else if "content" == name {
+				map_html[token] = this.tag_content(component, token)
+			} else if "link" == name {
+				map_html[token] = this.tag_link(token)
 			}
 		}
 	}
 
 	this.ensure_imports(component)
 
-	this.CSS_tags[""] = "files/" + utils.Md5String(this.CSS) + ".css"
-	this.JS_tags[""] = "files/" + utils.Md5String(this.JS) + ".js"
+	this.CSS_tags[""] = PATH_FILES + utils.Md5String(this.CSS) + ".css"
+	this.JS_tags[""] = PATH_FILES + utils.Md5String(this.JS) + ".js"
 
 	// Pass 2
 	for _, token := range *parse_html {
@@ -88,27 +62,6 @@ func (this *Blender) blend_html(component string) string {
 	return html
 }
 
-func (this *Blender) ensure_imports(component string) {
-	if exists, ok := this.included[component]; !ok || !exists {
-		this.included[component] = true
-		this.component_exists(component)
-
-		css := this.blend_css(component)
-		js := this.blend_js(component)
-
-		this.CSS += css
-		this.JS += js
-	}
-}
-
-func (this *Blender) component_exists(component string) {
-	_, err := ioutil.ReadDir(this.config.Dir.Components + "/" + component + "/")
-
-	if nil != err {
-		log.Println("Component `"+component+"` does not exist:", err)
-	}
-}
-
 func (this *Blender) blend_css(component string) string {
 
 	source_css := utils.ReadFile(this.config.Dir.Components + "/" + component + "/index.css")
@@ -124,10 +77,12 @@ func (this *Blender) blend_css(component string) string {
 			name := strings.ToLower(token.Name)
 			if "include" == name {
 				this.ensure_imports(token.Flags[0])
-			} else if "file" == name {
-				css += this.tag_file(component, token)
+			} else if "path" == name {
+				css += this.tag_path("", component, token)
 			} else if "base64" == name {
 				css += this.tag_base64(component, token)
+			} else if "content" == name {
+				css += this.tag_content(component, token)
 			}
 		}
 	}
@@ -150,8 +105,10 @@ func (this *Blender) blend_js(component string) string {
 			name := strings.ToLower(token.Name)
 			if "include" == name {
 				this.ensure_imports(token.Flags[0])
-			} else if "file" == name {
-				js += this.tag_file(component, token)
+			} else if "path" == name {
+				js += this.tag_path(PATH_FILES, component, token)
+			} else if "content" == name {
+				js += this.tag_content(component, token)
 			}
 		}
 	}
