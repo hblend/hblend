@@ -5,6 +5,7 @@ Hblend is a html, css and js preprocessor. Manage your code dependencies project
 <!-- MarkdownTOC autolink=true bracket=round depth=4 -->
 
 - [Sample project](#sample-project)
+- [Continuous preprocessing](#continuous-preprocessing)
 - [Getting started](#getting-started)
     - [Components](#components)
     - [Www](#www)
@@ -28,6 +29,13 @@ hblend page-1
 
 And have a look the final result in `www/page-1.html`.
 
+# Continuous preprocessing
+
+The common way to work is refresh the browser or the mobile phone constantly. To avoid the boring task of launching the hblend command each time, you can use the inotify tools in this way:
+
+```bash
+watch "inotifywait components && hblend YOUR-COMPONENT"
+```
 
 # Getting started
 
