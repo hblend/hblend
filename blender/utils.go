@@ -3,6 +3,7 @@ package blender
 import (
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 func (this *Blender) ensure_imports(component string) {
@@ -24,4 +25,17 @@ func (this *Blender) component_exists(component string) {
 	if nil != err {
 		log.Println("Component `"+component+"` does not exist:", err)
 	}
+}
+
+func in_array_lowercase(word string, array []string) bool {
+
+	word = strings.ToLower(word)
+
+	for _, v := range array {
+		if word == strings.ToLower(v) {
+			return true
+		}
+	}
+
+	return false
 }

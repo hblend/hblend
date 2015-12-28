@@ -53,8 +53,33 @@ func (this *Blender) tag_content(component string, token *gotreescript.Token) st
 
 	content := utils.ReadFile(filename)
 
-	escape, escape_ok := token.Args["escape"]
+	if !in_array_lowercase("no-parse", token.Flags) {
+		parse_content := gotreescript.Parse(content)
 
+		processed_content := ""
+		for _, token := range *parse_content {
+			if gotreescript.TEXT == token.Type {
+				processed_content += token.Partial
+			} else if gotreescript.TAG == token.Type {
+				name := strings.ToLower(token.Name)
+				if "include" == name {
+					this.ensure_imports(token.Flags[0])
+				} else if "path" == name {
+					processed_content += this.tag_path(PATH_FILES, component, token)
+				} else if "base64" == name {
+					processed_content += this.tag_base64(component, token)
+				} else if "content" == name {
+					processed_content = this.tag_content(component, token)
+				} else {
+					processed_content += token.Partial
+				}
+			}
+		}
+
+		content = processed_content
+	}
+
+	escape, escape_ok := token.Args["escape"]
 	if escape_ok {
 		if "string" == escape {
 			return strings.NewReplacer(
