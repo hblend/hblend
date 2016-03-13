@@ -1,0 +1,9 @@
+h1 {
+  background-color: dodgerblue;
+  color: white;
+  cursor: pointer;
+}
+
+h1:hover {
+  opacity: 0.6;
+}

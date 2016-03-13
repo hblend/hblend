@@ -1,0 +1,25 @@
+
+.menu {
+  display: block;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.menu li {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+
+.menu li a {
+  display: inline-block;
+  padding: 4px;
+  margin: 4px;
+  min-width: 100px;
+  color: dodgerblue;
+  border: solid 1px;
+  text-decoration: none;
+}
+
+[[todo: this is a comment]]

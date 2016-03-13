@@ -1,0 +1,15 @@
+.background-base64,
+.background-linked {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  margin: 4px;
+}
+
+.background-linked {
+  background: url('[[path smiley.png]]') no-repeat left center;
+}
+
+.background-base64 {
+  background: url('[[base64 smiley.png]]') no-repeat left center;
+}

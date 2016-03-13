@@ -1,36 +1,33 @@
 
 PROJECT=hblend
-GOPATH=$(shell pwd)/_vendor
-GOBIN=$(GOPATH)/bin
-GOPKG=$(GOPATH)/pkg
+PWD=$(shell pwd)
+GOPATH=$(PWD)
+GOBIN=$(PWD)/bin
+GOPKG=$(PWD)/pkg
 GO=go
 GOCMD=GOPATH=$(GOPATH) GOBIN=$(GOBIN) $(GO)
 
 .DEFAULT_GOAL := build_one
 
-.PHONY: all build clean dependencies setup
+.PHONY: all build clean dependencies
 
 all: build
 
 clean:
-	rm -fr _vendor
-
-setup:
-	mkdir -p _vendor/src
-	ln -s ../.. _vendor/src/hblend
+	@echo "Cleaning..."
+	rm -fr $(GOPKG)
 
 dependencies:
 	$(GOCMD) get $(PROJECT)
 
-build_one: clean setup dependencies
-	$(GOCMD) build -o $(GOBIN)/$(PROJECT);
+build_one: clean
+	$(GOCMD) build -o $(GOBIN)/$(PROJECT) $(PROJECT)
 
-build: clean setup dependencies
-	for GOOS in "windows" "linux" "darwin"; do \
+build: clean
+	@for GOOS in "windows" "linux" "darwin"; do \
 		for GOARCH in "386" "amd64"; do \
 			echo "Building $$GOOS-$$GOARCH..."; \
-			echo "GOOS=$$GOOS GOARCH=$$GOARCH $(GOCMD) build -o $(GOBIN)/$(PROJECT).$$GOOS.$$GOARCH"; \
-			GOOS=$$GOOS GOARCH=$$GOARCH $(GOCMD) build -o $(GOBIN)/$(PROJECT).$$GOOS.$$GOARCH; \
+			GOOS=$$GOOS GOARCH=$$GOARCH $(GOCMD) build -o $(GOBIN)/$(PROJECT).$$GOOS.$$GOARCH $(PROJECT); \
 		done \
 	done
 	ls $(GOBIN)

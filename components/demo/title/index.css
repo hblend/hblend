@@ -1,0 +1,14 @@
+
+h1 {
+  background-color: dodgerblue;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+  margin: 0;
+  padding: 16px;
+}
+
+h1:hover {
+  opacity: 0.6;
+}
+

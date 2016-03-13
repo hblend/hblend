@@ -1,0 +1,29 @@
+body {
+  display: block;
+  margin: 16px auto;
+  padding: 0 16px;
+  max-width: 1000px;
+}
+
+.menu {
+  display: block;
+  margin: 16px 0;
+  padding: 0;
+  text-align: center;
+}
+
+.menu li {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+
+.menu li a {
+  display: inline-block;
+  padding: 4px;
+  margin: 4px;
+  min-width: 100px;
+  color: dodgerblue;
+  border: solid 1px;
+  text-decoration: none;
+}
