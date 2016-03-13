@@ -1,1 +1,0 @@
-this <b>is</b> 'the remote content'

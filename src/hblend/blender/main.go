@@ -1,6 +1,7 @@
 package blender
 
 import (
+	"fmt"
 	"strings"
 
 	. "hblend/constants"
@@ -20,7 +21,36 @@ func NewBlender() *Blender {
 	}
 }
 
-func (b *Blender) Blend(name string) *Component {
+func (b *Blender) Blend(name string) {
+
+	b.add_component(name)
+	b.blend_all()
+}
+
+func (b *Blender) add_component(name string) {
+
+	if _, exist := b.linked[name]; !exist {
+		b.linked[name] = false
+		b.Blend(name)
+	}
+}
+
+func (b *Blender) blend_all() {
+
+	for name, linked := range b.linked {
+		if !linked {
+			b.linked[name] = true
+			c := b.blend_component(name)
+			for n, _ := range c.Linked {
+				b.add_component(n)
+			}
+		}
+	}
+}
+
+func (b *Blender) blend_component(name string) *Component {
+
+	fmt.Printf("Blending %s\n", name)
 
 	c := NewComponent(name)
 	c.Files = b.Files
@@ -31,7 +61,4 @@ func (b *Blender) Blend(name string) *Component {
 	utils.WriteFile(DIR_WWW+"/"+DIR_FILES+"/"+utils.Md5String(*c.Js)+".js", *c.Js)
 
 	return c
-
-	// this.linked[component] = true
-
 }

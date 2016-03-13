@@ -1,0 +1,14 @@
+<p>You can also include files. For example:</p>
+
+<div>This html file:</div>
+<code>[[content index.html escape:html no-parse]]</code>
+
+<div>A remote file:</div>
+<blockquote>
+	[[content https://www.google.com/humans.txt escape:html]]
+</blockquote>
+
+<div>Escape javascript:</div>
+<button onclick="alert('[[content message.txt escape:string]]');">
+	Who are you?
+</button>

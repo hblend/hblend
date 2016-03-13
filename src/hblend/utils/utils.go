@@ -3,12 +3,14 @@ package utils
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
+	"strings"
 )
 
 func ReadFileBytes(filename string) []byte {
@@ -85,7 +87,7 @@ func CopyFileRemote(src, dst string) error {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil
+		return errors.New("GET " + src + ": Status code '" + response.Status + "', expected '200 OK'")
 	}
 
 	output, output_err := os.Create(dst)
@@ -102,10 +104,9 @@ func CopyFileRemote(src, dst string) error {
 	return nil
 }
 
-func CheckFileExists(filename string) bool {
+func FileExists(filename string) bool {
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		fmt.Printf("File `%s` does not exist\n", filename)
 		return false
 	}
 
@@ -130,4 +131,17 @@ func Md5String(text string) string {
 	md5_adder.Write(bytes)
 
 	return hex.EncodeToString(md5_adder.Sum(nil))
+}
+
+func InArrayLowercase(word string, array []string) bool {
+
+	word = strings.ToLower(word)
+
+	for _, v := range array {
+		if word == strings.ToLower(v) {
+			return true
+		}
+	}
+
+	return false
 }

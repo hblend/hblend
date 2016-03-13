@@ -1,0 +1,34 @@
+
+code {
+  display: block;
+  border: solid silver 1px;
+  white-space: pre;
+  overflow-x: auto;
+  padding: 0 !important;
+}
+
+code .gutter {
+  display: block;
+  float: left;
+  min-width: 48px;
+  border-right: solid #EEEEEE 1px;
+  text-align: right;
+  color: #B2B2B2;
+  background: white;
+  margin-right: 0.5rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+/* */
+code {
+  color: silver !important;
+  background-color:  #333333 !important;
+  margin-bottom: 32px;
+}
+
+code .gutter {
+  color: gray;
+  background-color: #222222;
+  border: none;
+}
