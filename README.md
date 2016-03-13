@@ -126,7 +126,7 @@ This tag will be replaced by the content of the file. It has several modes:
 * `escape=urlencode` -> use url encode to escape it
 * `escape=html` -> escape html entities
 
-NOTE (1): If the included file is html, it is not processed (TODO this feature in the future)
+NOTE (1): The content of the file will be preprocessed unless the flag `no-parse` is set.
 
 ## include
 
