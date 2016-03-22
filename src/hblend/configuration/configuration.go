@@ -14,10 +14,12 @@ var DirFiles = "files"
 var Component = ""
 var Verbose = false
 var Help = false
+var Clean = false
 
 func init() {
 
 	flag.StringVar(&DirWww, "output", "www", "Output directory")
+	flag.BoolVar(&Clean, "clean", false, "Clean output directory")
 	flag.BoolVar(&Verbose, "v", false, "Verbose: show extra information.")
 	flag.BoolVar(&Help, "h", false, "Show this help")
 
@@ -60,6 +62,10 @@ func init() {
 		fmt.Printf("\tDirFiles: %s\n", DirFiles)
 		fmt.Printf("\tComponent: %s\n", Component)
 		fmt.Printf("\tVerbose: %t\n", Verbose)
+	}
+
+	if Clean {
+		os.RemoveAll(DirWww)
 	}
 
 }
