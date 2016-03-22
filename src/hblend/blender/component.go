@@ -64,8 +64,10 @@ func (c *Component) blend_html() {
 	c.blend_js()
 	c.blend_css()
 
-	c.TagsCss = append(c.TagsCss, DIR_FILES+"/"+utils.Md5String(*c.Css)+".css")
-	c.TagsJs = append(c.TagsJs, DIR_FILES+"/"+utils.Md5String(*c.Js)+".js")
+	dst := strings.Replace(c.Location.Name, "/", "_", -1)
+
+	c.TagsCss = append(c.TagsCss, dst+".css")
+	c.TagsJs = append(c.TagsJs, dst+".js")
 
 	for _, token := range *parse_html {
 		if gotreescript.TEXT == token.Type {
@@ -113,7 +115,7 @@ func (c *Component) blend_css() {
 			} else if "content" == n {
 				*c.Css += c.tag_content(token)
 			} else if "path" == n {
-				*c.Css += c.tag_path(token, "")
+				*c.Css += c.tag_path(token, DIR_FILES+"/")
 			} else if "link" == n {
 				*c.Css += c.tag_link(token)
 			} else if "todo:" == n {

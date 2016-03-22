@@ -56,9 +56,10 @@ func (b *Blender) blend_component(name string) *Component {
 	c.Files = b.Files
 	c.Blend()
 
-	utils.WriteFile(DIR_WWW+"/"+strings.Replace(c.Location.Name, "/", "_", -1)+".html", *c.Html)
-	utils.WriteFile(DIR_WWW+"/"+DIR_FILES+"/"+utils.Md5String(*c.Css)+".css", *c.Css)
-	utils.WriteFile(DIR_WWW+"/"+DIR_FILES+"/"+utils.Md5String(*c.Js)+".js", *c.Js)
+	dst := DIR_WWW + "/" + strings.Replace(c.Location.Name, "/", "_", -1)
+	utils.WriteFile(dst+".html", *c.Html)
+	utils.WriteFile(dst+".css", *c.Css)
+	utils.WriteFile(dst+".js", *c.Js)
 
 	return c
 }
