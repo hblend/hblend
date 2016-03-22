@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	. "hblend/constants"
+	config "hblend/configuration"
 	"hblend/utils"
 )
 
@@ -56,7 +56,7 @@ func (b *Blender) blend_component(name string) *Component {
 	c.Files = b.Files
 	c.Blend()
 
-	dst := DIR_WWW + "/" + strings.Replace(c.Location.Name, "/", "_", -1)
+	dst := config.DirWww + "/" + strings.Replace(c.Location.Name, "/", "_", -1)
 	utils.WriteFile(dst+".html", *c.Html)
 	utils.WriteFile(dst+".css", *c.Css)
 	utils.WriteFile(dst+".js", *c.Js)

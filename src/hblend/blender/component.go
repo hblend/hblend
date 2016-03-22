@@ -9,7 +9,7 @@ import (
 
 	"github.com/fulldump/gotreescript"
 
-	. "hblend/constants"
+	config "hblend/configuration"
 	"hblend/utils"
 	"html"
 )
@@ -82,7 +82,7 @@ func (c *Component) blend_html() {
 			} else if "content" == n {
 				*c.Html += c.tag_content(token)
 			} else if "path" == n {
-				*c.Html += c.tag_path(token, DIR_FILES+"/")
+				*c.Html += c.tag_path(token, config.DirFiles+"/")
 			} else if "link" == n {
 				*c.Html += c.tag_link(token)
 			} else if "css-tags" == n {
@@ -115,7 +115,7 @@ func (c *Component) blend_css() {
 			} else if "content" == n {
 				*c.Css += c.tag_content(token)
 			} else if "path" == n {
-				*c.Css += c.tag_path(token, DIR_FILES+"/")
+				*c.Css += c.tag_path(token, config.DirFiles+"/")
 			} else if "link" == n {
 				*c.Css += c.tag_link(token)
 			} else if "todo:" == n {
@@ -145,7 +145,7 @@ func (c *Component) blend_js() {
 			} else if "content" == n {
 				*c.Js += c.tag_content(token)
 			} else if "path" == n {
-				*c.Js += c.tag_path(token, DIR_FILES+"/")
+				*c.Js += c.tag_path(token, config.DirFiles+"/")
 			} else if "link" == n {
 				*c.Js += c.tag_link(token)
 			} else if "todo:" == n {
@@ -160,7 +160,7 @@ func (c *Component) blend_js() {
 
 func (c *Component) Blend() {
 
-	path := DIR_COMPONENTS + "/" + c.Location.Name
+	path := config.DirComponents + "/" + c.Location.Name
 	if !utils.FileExists(path) {
 		fmt.Printf("WARNING: Missing component '%s'.\n", c.Location.Name)
 	}
@@ -247,7 +247,7 @@ func (c *Component) tag_content(token *gotreescript.Token) string {
 				} else if "content" == n {
 					processed_content = c.tag_content(token)
 				} else if "path" == n {
-					processed_content += c.tag_path(token, DIR_FILES+"/")
+					processed_content += c.tag_path(token, config.DirFiles+"/")
 				} else if "link" == n {
 					processed_content += c.tag_link(token)
 				} else if "todo:" == n {
@@ -290,7 +290,7 @@ func (c *Component) tag_path(token *gotreescript.Token, prefix string) string {
 	src := c.ReadPaths(filename)
 	dst := md5 + filepath.Ext(filename)
 
-	new_filename := DIR_FILES + "/" + dst
+	new_filename := config.DirFiles + "/" + dst
 
 	c.Files[new_filename] = src
 
@@ -343,12 +343,12 @@ func (c *Component) ReadPaths(filename string) string {
 
 	if l.Remote { // Absolute remote
 		src := l.Schema + "://" + l.Name
-		dst := DIR_COMPONENTS + "/" + l.Name
+		dst := config.DirComponents + "/" + l.Name
 		download(src, dst)
 		return dst
 	}
 
-	dst := DIR_COMPONENTS + "/" + c.Location.Name + "/" + l.Name
+	dst := config.DirComponents + "/" + c.Location.Name + "/" + l.Name
 
 	if c.Location.Remote {
 		src := c.Location.Schema + "://" + c.Location.Name + "/" + l.Name
