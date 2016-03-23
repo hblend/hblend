@@ -1,3 +1,5 @@
 www/
 bin/
 pkg/
+coverage/
+__remote__

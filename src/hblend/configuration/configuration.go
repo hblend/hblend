@@ -11,6 +11,7 @@ import (
 var DirComponents = "components"
 var DirWww = "www"
 var DirFiles = "files"
+var DirRemote = "__remote__"
 var Component = ""
 var Verbose = false
 var Help = false
@@ -19,6 +20,7 @@ var Clean = false
 func init() {
 
 	flag.StringVar(&DirWww, "output", "www", "Output directory")
+	flag.StringVar(&DirRemote, "remote", "__remote__", "Remote directory")
 	flag.BoolVar(&Clean, "clean", false, "Clean output directory")
 	flag.BoolVar(&Verbose, "v", false, "Verbose: show extra information.")
 	flag.BoolVar(&Help, "h", false, "Show this help")

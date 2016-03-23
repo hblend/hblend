@@ -10,12 +10,13 @@ import (
 	"github.com/fulldump/gotreescript"
 
 	config "hblend/configuration"
+	"hblend/location"
 	"hblend/utils"
 	"html"
 )
 
 type Component struct {
-	Location *Location
+	Location *location.Location
 	Html     *string
 	Css      *string
 	Js       *string
@@ -32,7 +33,7 @@ func NewComponent(name string) *Component {
 	js := ""
 
 	return &Component{
-		Location: NewLocation(name),
+		Location: location.NewLocation(name),
 		Html:     &html,
 		Css:      &css,
 		Js:       &js,
@@ -45,7 +46,7 @@ func NewComponent(name string) *Component {
 }
 
 func (c *Component) blend_html() {
-	parse_html := gotreescript.Parse(c.ReadFileString("index.html"))
+	parse_html := gotreescript.Parse(c.ReadFileString(c.Location.Name + ".html"))
 
 	// Traverse ONLY includes
 	for _, token := range *parse_html {
@@ -64,7 +65,7 @@ func (c *Component) blend_html() {
 	c.blend_js()
 	c.blend_css()
 
-	dst := strings.Replace(c.Location.Name, "/", "_", -1)
+	dst := strings.Replace(c.Location.Dir+c.Location.Name, "/", "_", -1)
 
 	c.TagsCss = append(c.TagsCss, dst+".css")
 	c.TagsJs = append(c.TagsJs, dst+".js")
@@ -100,37 +101,39 @@ func (c *Component) blend_html() {
 }
 
 func (c *Component) blend_css() {
-	parse_css := gotreescript.Parse(c.ReadFileString("index.css"))
+	parse_css := gotreescript.Parse(c.ReadFileString(c.Location.Name + ".css"))
 
+	css := ""
 	for _, token := range *parse_css {
 		if gotreescript.TEXT == token.Type {
-			*c.Css += token.Partial
+			css += token.Partial
 		} else if gotreescript.TAG == token.Type {
 			n := strings.ToLower(token.Name)
 
 			if "include" == n {
 				c.tag_include(token)
 			} else if "base64" == n {
-				*c.Css += c.tag_base64(token)
+				css += c.tag_base64(token)
 			} else if "content" == n {
-				*c.Css += c.tag_content(token)
+				css += c.tag_content(token)
 			} else if "path" == n {
-				*c.Css += c.tag_path(token, config.DirFiles+"/")
+				css += c.tag_path(token, config.DirFiles+"/")
 			} else if "link" == n {
-				*c.Css += c.tag_link(token)
+				css += c.tag_link(token)
 			} else if "todo:" == n {
-				*c.Css += c.tag_todo(token)
+				css += c.tag_todo(token)
 			} else {
-				*c.Css += c.tag_else(token)
+				css += c.tag_else(token)
 			}
 		}
 	}
 
+	*c.Css += css
 }
 
 func (c *Component) blend_js() {
 
-	parse_js := gotreescript.Parse(c.ReadFileString("index.js"))
+	parse_js := gotreescript.Parse(c.ReadFileString(c.Location.Name + ".js"))
 
 	for _, token := range *parse_js {
 		if gotreescript.TEXT == token.Type {
@@ -160,8 +163,14 @@ func (c *Component) blend_js() {
 
 func (c *Component) Blend() {
 
-	path := config.DirComponents + "/" + c.Location.Name
-	if !utils.FileExists(path) {
+	path := ""
+	if c.Location.Remote {
+		path = config.DirComponents + config.DirRemote + "/" + c.Location.Dir + c.Location.Name
+	} else {
+		path = config.DirComponents + c.Location.Dir + c.Location.Name
+	}
+
+	if !utils.FileExists(path+".html") && !utils.FileExists(path+".css") && !utils.FileExists(path+".js") {
 		fmt.Printf("WARNING: Missing component '%s'.\n", c.Location.Name)
 	}
 
@@ -174,8 +183,13 @@ func (c *Component) Blend() {
 func (c *Component) require(token *gotreescript.Token) *Component {
 
 	component := token_component(token)
-	location := NewLocation(component)
-	name := location.Name //  Normalized name
+	location := location.NewLocation(component)
+	name := ""
+	if location.Remote {
+		name = component
+	} else {
+		name = location.Dir + location.Name //  Normalized name
+	}
 
 	if item, exists := c.included[name]; exists {
 		return item
@@ -229,6 +243,7 @@ func (c *Component) tag_base64(token *gotreescript.Token) string {
 func (c *Component) tag_content(token *gotreescript.Token) string {
 
 	filename := token_component(token)
+
 	content := c.ReadFileString(filename)
 
 	if !utils.InArrayLowercase("no-parse", token.Flags) {
@@ -302,8 +317,8 @@ func (c *Component) tag_link(token *gotreescript.Token) string {
 	filename := token_component(token)
 	c.Linked[filename] = true
 
-	location := NewLocation(filename)
-	name := location.Name // Normalized name
+	location := location.NewLocation(filename)
+	name := location.Dir + location.Name // Normalized name
 
 	return strings.Replace(name, "/", "_", -1) + ".html"
 }
@@ -339,22 +354,24 @@ func token_component(t *gotreescript.Token) string {
 }
 
 func (c *Component) ReadPaths(filename string) string {
-	l := NewLocation(filename)
 
+	l := location.NewLocation(filename)
+
+	// If filename is a remote resource then, Download it.
 	if l.Remote { // Absolute remote
-		src := l.Schema + "://" + l.Name
-		dst := config.DirComponents + "/" + l.Name
+		src := l.Schema + "://" + filepath.Join(l.Dir, l.Filename)
+		dst := config.DirComponents + config.DirRemote + "/" + l.Dir + l.Filename
 		download(src, dst)
 		return dst
 	}
 
-	dst := config.DirComponents + "/" + c.Location.Name + "/" + l.Name
-
 	if c.Location.Remote {
-		src := c.Location.Schema + "://" + c.Location.Name + "/" + l.Name
+		dst := config.DirComponents + config.DirRemote + "/" + c.Location.Dir + l.Dir + filename
+		src := c.Location.Schema + "://" + c.Location.Dir + "/" + l.Dir + filename
 		download(src, dst)
 	}
 
+	dst := config.DirComponents + c.Location.Dir + filename
 	return dst
 }
 
