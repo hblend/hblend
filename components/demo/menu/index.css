@@ -1,6 +1,6 @@
 body {
   display: block;
-  margin: 16px auto;
+  margin: 16px auto !important;
   padding: 0 16px;
   max-width: 1000px;
 }
