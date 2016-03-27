@@ -3,12 +3,19 @@ package main
 import (
 	"hblend/blender"
 	config "hblend/configuration"
+	"hblend/storage"
 	"hblend/utils"
 )
 
 func main() {
 
-	b := blender.NewBlender()
+	b := blender.New()
+
+	b.Storage = storage.New(&storage.Config{
+		BaseDir:   config.DirComponents,
+		RemoteDir: config.DirRemote,
+	})
+
 	b.Blend(config.Component)
 
 	for dst, src := range b.Files {

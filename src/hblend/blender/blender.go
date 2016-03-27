@@ -4,20 +4,26 @@ import (
 	"fmt"
 	"strings"
 
+	"hblend/component"
 	config "hblend/configuration"
+	"hblend/location"
+	"hblend/storage"
 	"hblend/utils"
 )
 
 type Blender struct {
-	Files  map[string]string
-	linked map[string]bool
+	Files    map[string]string
+	linked   map[string]bool
+	Storage  storage.Storager
+	Location *location.Location
 }
 
-func NewBlender() *Blender {
+func New() *Blender {
 
 	return &Blender{
-		Files:  map[string]string{},
-		linked: map[string]bool{},
+		Files:    map[string]string{},
+		linked:   map[string]bool{},
+		Location: location.New(),
 	}
 }
 
@@ -48,15 +54,17 @@ func (b *Blender) blend_all() {
 	}
 }
 
-func (b *Blender) blend_component(name string) *Component {
+func (b *Blender) blend_component(name string) *component.Component {
 
 	fmt.Printf("Blending %s\n", name)
 
-	c := NewComponent(name)
+	l := b.Location.Navigate(name)
+	c := component.New(l)
+	c.Storage = b.Storage
 	c.Files = b.Files
 	c.Blend()
 
-	dst := config.DirWww + "/" + strings.Replace(c.Location.Dir+c.Location.Name, "/", "_", -1)
+	dst := config.DirWww + "/" + strings.Replace(c.Location.Canonical(), "/", "_", -1)
 	utils.WriteFile(dst+".html", *c.Html)
 	utils.WriteFile(dst+".css", *c.Css)
 	utils.WriteFile(dst+".js", *c.Js)

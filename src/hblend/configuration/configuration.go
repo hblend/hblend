@@ -17,7 +17,7 @@ var Verbose = false
 var Help = false
 var Clean = false
 
-func init() {
+func ainit() {
 
 	flag.StringVar(&DirWww, "output", "www", "Output directory")
 	flag.StringVar(&DirRemote, "remote", "__remote__", "Remote directory")

@@ -1,46 +1,70 @@
 package location
 
 import (
+	"net/url"
 	"path/filepath"
 	"strings"
 )
 
 type Location struct {
-	Name     string // Canonical name
-	Filename string
 	Dir      string
-	Remote   bool
-	Schema   string
+	Filename string
 }
 
-func NewLocation(name string) *Location {
+func New() *Location {
+	return &Location{}
+}
 
-	l := &Location{}
+func (l *Location) Navigate(path string) *Location {
+	r := New()
 
-	if strings.HasPrefix(name, "http://") {
-		l.Remote = true
-		l.Schema = "http"
-		name = strings.TrimPrefix(name, "http://")
+	if is_remote(path) {
+		u, _ := url.Parse(path)
+		dir, filename := filepath.Split(u.Path)
+		u.Path = dir
 
-	} else if strings.HasPrefix(name, "https://") {
-		l.Remote = true
-		l.Schema = "https"
-		name = strings.TrimPrefix(name, "https://")
+		r.Dir = u.String()
+		r.Filename = filename
+	} else if is_relative(path) {
+		dir, filename := filepath.Split(path)
+
+		if is_remote(l.Dir) {
+			u, _ := url.Parse(l.Dir)
+			u.Path = filepath.Join(u.Path, dir) + "/"
+			r.Dir = u.String()
+		} else {
+			r.Dir = filepath.Join(l.Dir, dir) + "/"
+		}
+
+		r.Filename = filename
 	} else {
-		l.Remote = false
-		l.Schema = "file"
-		// name = name
+		dir, filename := filepath.Split(path)
+
+		r.Dir = dir
+		r.Filename = filename
 	}
 
-	l.Dir, l.Filename = filepath.Split(name)
+	return r
+}
 
-	l.Name = l.Filename
-	if "" == l.Name {
-		l.Name = "index"
-	}
+func (l *Location) IsRemote() bool {
+	return is_remote(l.Dir)
+}
 
-	ext := filepath.Ext(l.Name)
-	l.Name = strings.TrimSuffix(l.Name, ext)
+func (l *Location) Canonical() string {
+	return filepath.Join(l.Dir, l.Filename)
+}
 
-	return l
+func is_remote(path string) bool {
+	path = strings.ToLower(path)
+
+	is_http := strings.HasPrefix(path, "http://")
+	is_https := strings.HasPrefix(path, "https://")
+
+	return is_http || is_https
+}
+
+func is_relative(path string) bool {
+
+	return strings.HasPrefix(path, ".")
 }

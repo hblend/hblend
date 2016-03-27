@@ -9,7 +9,7 @@ GOCMD=GOPATH=$(GOPATH) GOBIN=$(GOBIN) $(GO)
 
 .DEFAULT_GOAL := build_one
 
-.PHONY: all build clean dependencies
+.PHONY: all build build_one clean dependencies test coverage
 
 all: build
 
