@@ -1,5 +1,10 @@
 <img src="logo.png">
 
+<p align="center">
+<a href="https://travis-ci.org/hblend/hblend"><img src="https://api.travis-ci.org/hblend/hblend.svg?branch=master"></a>
+</p>
+
+
 Hblend is a html, css and js preprocessor. Manage your code dependencies project into a nice package.
 
 <!-- MarkdownTOC autolink=true bracket=round depth=4 -->
