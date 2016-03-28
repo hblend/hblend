@@ -32,6 +32,11 @@ func (s *Storage) Path(l *location.Location) string {
 	return path
 }
 
+func (s *Storage) Exists(l *location.Location) bool {
+	p := s.Path(l)
+	return utils.FileExists(p)
+}
+
 func (s *Storage) ReadFileBytes(l *location.Location) ([]byte, error) {
 
 	path := s.Path(l)
