@@ -1,30 +1,28 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-
 	"hblend/blender"
-	. "hblend/constants"
+	config "hblend/configuration"
+	"hblend/storage"
 	"hblend/utils"
 )
 
 func main() {
 
-	flag.Parse()
+	config.Parse()
 
-	if 1 != len(flag.Args()) {
-		fmt.Println("You should indicate the component you want, for example:\nhblend my-app")
-		return
-	}
-	component := flag.Args()[0]
+	b := blender.New()
 
-	b := blender.NewBlender()
-	b.Blend(component)
+	b.Storage = storage.New(&storage.Config{
+		BaseDir:   config.DirComponents,
+		RemoteDir: config.DirRemote,
+	})
+
+	b.Blend(config.Component)
 
 	for dst, src := range b.Files {
 		if !utils.FileExists(dst) {
-			utils.CopyFile(src, DIR_WWW+"/"+dst)
+			utils.CopyFile(src, config.DirWww+"/"+dst)
 		}
 	}
 

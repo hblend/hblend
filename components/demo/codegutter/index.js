@@ -15,9 +15,6 @@ window.addEventListener('load', function(e) {
 		}
 		gutter.innerHTML = gutter_numbers.join('<br>');
 		code.insertBefore(gutter, code.firstChild);
-
-
-
 	}
 
 }, true);

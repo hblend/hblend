@@ -9,7 +9,7 @@ GOCMD=GOPATH=$(GOPATH) GOBIN=$(GOBIN) $(GO)
 
 .DEFAULT_GOAL := build_one
 
-.PHONY: all build clean dependencies
+.PHONY: all build build_one clean dependencies test coverage
 
 all: build
 
@@ -31,3 +31,21 @@ build: clean
 		done \
 	done
 	ls $(GOBIN)
+
+test:
+	$(GOCMD) test ./src/$(PROJECT)/... -cover
+
+coverage:
+	rm -fr coverage
+	mkdir -p coverage
+	$(GOCMD) list $(PROJECT)/... > coverage/packages
+	@i=a ; \
+	while read -r P; do \
+		i=a$$i ; \
+		$(GOCMD) test ./src/$$P -cover -covermode=count -coverprofile=coverage/$$i.out; \
+	done <coverage/packages
+
+	echo "mode: count" > coverage/coverage
+	cat coverage/*.out | grep -v "mode: count" >> coverage/coverage
+	$(GOCMD) tool cover -html=coverage/coverage
+
