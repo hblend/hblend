@@ -330,8 +330,6 @@ func (c *Component) tag_link(token *gotreescript.Token) string {
 
 	filename := token_component(token)
 
-	fmt.Println("filename:", filename)
-
 	link := c.Location.Navigate(filename)
 	if "" == link.Filename {
 		link.Filename = "index"
