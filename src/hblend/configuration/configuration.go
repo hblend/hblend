@@ -17,7 +17,7 @@ var Verbose = false
 var Help = false
 var Clean = false
 
-func ainit() {
+func Parse() {
 
 	flag.StringVar(&DirWww, "output", "www", "Output directory")
 	flag.StringVar(&DirRemote, "remote", "__remote__", "Remote directory")

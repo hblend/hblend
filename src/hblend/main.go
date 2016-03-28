@@ -9,6 +9,8 @@ import (
 
 func main() {
 
+	config.Parse()
+
 	b := blender.New()
 
 	b.Storage = storage.New(&storage.Config{
