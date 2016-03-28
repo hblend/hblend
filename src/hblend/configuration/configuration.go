@@ -35,7 +35,7 @@ func Parse() {
 
 	// Pick up component path
 	if 1 != flag.NArg() {
-		fmt.Println("You should indicate the component you want, for example:\nhblend project/index.html")
+		fmt.Println("You should indicate the component you want, for example:\nhblend project/index")
 		os.Exit(-1)
 	}
 	DirComponents, Component = filepath.Split(flag.Arg(0))

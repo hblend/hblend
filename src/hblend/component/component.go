@@ -185,6 +185,21 @@ func (c *Component) blend_js() string {
 func (c *Component) Blend() {
 
 	// TODO: Check if component does not exist
+	filename_html := "./" + c.Location.Filename + ".html"
+	location_html := c.Location.Navigate(filename_html)
+	exists_html := c.Storage.Exists(location_html)
+
+	filename_css := "./" + c.Location.Filename + ".css"
+	location_css := c.Location.Navigate(filename_css)
+	exists_css := c.Storage.Exists(location_css)
+
+	filename_js := "./" + c.Location.Filename + ".js"
+	location_js := c.Location.Navigate(filename_js)
+	exists_js := c.Storage.Exists(location_js)
+
+	if !exists_html && !exists_css && !exists_js {
+		fmt.Printf("WARNING: Component '%s' does not exist.\n", c.Location.Dir+c.Location.Filename)
+	}
 
 	c.blend_html()
 }
@@ -197,6 +212,9 @@ func (c *Component) require(token *gotreescript.Token) *Component {
 	component := token_component(token)
 
 	l := c.Location.Navigate(component)
+	if "" == l.Filename {
+		l.Filename = "index"
+	}
 
 	canonical := l.Canonical()
 
@@ -245,7 +263,13 @@ func (c *Component) tag_jstags(token *gotreescript.Token) string {
 func (c *Component) tag_base64(token *gotreescript.Token) string {
 
 	filename := token_component(token)
-	bytes, _ := c.Storage.ReadFileBytes(c.Location.Navigate(filename))
+	l := c.Location.Navigate(filename)
+
+	if !c.Storage.Exists(l) {
+		fmt.Printf("WARNING: tag base64: File '%s' not found.\n", l.Dir+l.Filename)
+	}
+
+	bytes, _ := c.Storage.ReadFileBytes(l)
 
 	return "data:;base64," + base64.StdEncoding.EncodeToString(bytes)
 }
@@ -253,8 +277,13 @@ func (c *Component) tag_base64(token *gotreescript.Token) string {
 func (c *Component) tag_content(token *gotreescript.Token) string {
 
 	filename := token_component(token)
+	l := c.Location.Navigate(filename)
 
-	content, _ := c.Storage.ReadFileString(c.Location.Navigate(filename))
+	if !c.Storage.Exists(l) {
+		fmt.Printf("WARNING: tag content: File '%s' not found.\n", l.Dir+l.Filename)
+	}
+
+	content, _ := c.Storage.ReadFileString(l)
 
 	if !utils.InArrayLowercase("no-parse", token.Flags) {
 		parse_content := gotreescript.Parse(content)
@@ -312,6 +341,10 @@ func (c *Component) tag_path(token *gotreescript.Token) string {
 
 	l := c.Location.Navigate(filename)
 
+	if !c.Storage.Exists(l) {
+		fmt.Printf("WARNING: tag path: File '%s' not found.\n", l.Dir+l.Filename)
+	}
+
 	bytes, _ := c.Storage.ReadFileString(l)
 
 	md5 := utils.Md5String(bytes)
@@ -333,6 +366,15 @@ func (c *Component) tag_link(token *gotreescript.Token) string {
 	link := c.Location.Navigate(filename)
 	if "" == link.Filename {
 		link.Filename = "index"
+	}
+
+	l := c.Location.Navigate(filename)
+	if "" == link.Filename {
+		link.Filename = "index.html"
+	}
+
+	if !c.Storage.Exists(l) {
+		fmt.Printf("WARNING: tag link: Component '%s' not found.\n", l.Dir+l.Filename)
 	}
 
 	canonical := link.Canonical()
