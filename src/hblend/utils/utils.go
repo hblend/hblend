@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/md5"
+	"crypto/tls"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -11,6 +12,8 @@ import (
 	"os"
 	"path"
 	"strings"
+
+	config "hblend/configuration"
 )
 
 func ReadFileBytes(filename string) []byte {
@@ -77,10 +80,18 @@ func EnsureDirs(filename string) error {
 }
 
 func CopyFileRemote(src, dst string) error {
-
 	EnsureDirs(dst)
 
-	response, response_err := http.Get(src)
+	// Configure transport layer
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: config.Insecure,
+		},
+	}
+	client := &http.Client{Transport: tr}
+
+	// Do the request
+	response, response_err := client.Get(src)
 	if response_err != nil {
 		return response_err
 	}
