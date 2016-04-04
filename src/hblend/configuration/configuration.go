@@ -16,6 +16,7 @@ var Component = ""
 var Verbose = false
 var Help = false
 var Clean = false
+var Insecure = false
 
 func Parse() {
 
@@ -24,6 +25,7 @@ func Parse() {
 	flag.BoolVar(&Clean, "clean", false, "Clean output directory")
 	flag.BoolVar(&Verbose, "v", false, "Verbose: show extra information.")
 	flag.BoolVar(&Help, "h", false, "Show this help")
+	flag.BoolVar(&Insecure, "insecure", false, "Allow insecure https connections")
 
 	flag.Parse()
 
